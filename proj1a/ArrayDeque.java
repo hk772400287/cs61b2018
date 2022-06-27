@@ -89,7 +89,7 @@ public class ArrayDeque<T> {
         } else {
             first = 0;
         }
-        if (ratio() < 0.25) {
+        if (ratio() < 0.25 && item.length >= 16) {
             resizing(item.length / 2);
         }
         return p;
@@ -107,7 +107,7 @@ public class ArrayDeque<T> {
         } else {
             last = item.length - 1;
         }
-        if (ratio() < 0.25) {
+        if (ratio() < 0.25 && item.length >= 16) {
             resizing(item.length / 2);
         }
         return p;
