@@ -66,7 +66,7 @@ public class ArrayDeque<T> {
     }
 
     public double ratio() {
-        return size / item.length;
+        return size / (double)item.length;
     }
 
     public void printDeque() {
