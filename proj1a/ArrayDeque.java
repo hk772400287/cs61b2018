@@ -1,4 +1,4 @@
-public class ArrayDeque <T> {
+public class ArrayDeque<T> {
     private T [] item;
     private int size;
     private int first;
@@ -19,7 +19,7 @@ public class ArrayDeque <T> {
         } else if (isFull()) {
             resizing(item.length * 2);
         }
-        if (first !=0) {
+        if (first != 0) {
             first -= 1;
         } else {
             first = item.length - 1;
@@ -36,7 +36,7 @@ public class ArrayDeque <T> {
         } else if (isFull()) {
             resizing(item.length * 2);
         }
-        if (last != item.length-1) {
+        if (last != item.length - 1) {
             last += 1;
         } else {
             last = 0;
@@ -45,7 +45,7 @@ public class ArrayDeque <T> {
         size += 1;
     }
 
-    public boolean isFull() {
+    private boolean isFull() {
         if (size == item.length) {
             return true;
         }
@@ -65,12 +65,12 @@ public class ArrayDeque <T> {
         return size;
     }
 
-    public double ratio() {
-        return size / (double)item.length;
+    private double ratio() {
+        return size / (double) item.length;
     }
 
     public void printDeque() {
-        for(int i=0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             System.out.print(get(i));
             System.out.print(" ");
         }
@@ -129,7 +129,7 @@ public class ArrayDeque <T> {
         }
     }
 
-    public void resizing(int capacity) {
+    private void resizing(int capacity) {
         T [] a = (T []) new Object[capacity];
         if (first <= last) {
             System.arraycopy(item, first, a, 0, size);
@@ -139,6 +139,6 @@ public class ArrayDeque <T> {
         }
         item = a;
         first = 0;
-        last = size-1;
+        last = size - 1;
     }
 }

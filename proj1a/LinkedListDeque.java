@@ -1,10 +1,8 @@
-import com.sun.jdi.AbsentInformationException;
-
 public class LinkedListDeque<T> {
     private class IntNode {
-        public IntNode prev;
-        public T item;
-        public IntNode next;
+        private IntNode prev;
+        private T item;
+        private IntNode next;
 
         public IntNode(IntNode p, T i, IntNode n) {
             prev = p;
@@ -20,12 +18,6 @@ public class LinkedListDeque<T> {
     private IntNode sentinel;
     private int size;
 
-    public LinkedListDeque(T i) {
-        sentinel = new IntNode();
-        sentinel.next = new IntNode(sentinel, i, sentinel);
-        sentinel.prev = sentinel.next;
-        size = 1;
-    }
 
     public LinkedListDeque() {
         sentinel = new IntNode();
