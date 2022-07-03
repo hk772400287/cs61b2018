@@ -9,7 +9,8 @@ public class TestArrayDequeGold {
         Integer a = 0;
         Integer b = 0;
         String ops = "";
-        for (int i = 0; i < 1000; i++) {
+        int i = 0;
+        while (true) {
             double numberBetweenZeroAndOne = StdRandom.uniform();
             if (numberBetweenZeroAndOne < 0.25) {
                 sad.addFirst(i);
@@ -37,6 +38,7 @@ public class TestArrayDequeGold {
                 }
             }
             assertEquals(ops, b, a);
+            i++;
         }
     }
 
