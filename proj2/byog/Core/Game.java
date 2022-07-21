@@ -51,7 +51,7 @@ public class Game {
     }
 
     private long giveSEED(String input) {
-        Pattern r = Pattern.compile("\\D*(\\d+)\\D*");
+        Pattern r = Pattern.compile("N(\\d+)S");
         Matcher m = r.matcher(input);
         if (m.find()) {
             long seed = Long.parseLong(m.group(1));
