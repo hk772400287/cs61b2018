@@ -36,12 +36,12 @@ public class Game {
         //  Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-        Pattern r = Pattern.compile("N?n?(\\d+)\\D+");
+        Pattern r = Pattern.compile("N(\\d+)S");
         Matcher m = r.matcher(input);
         if (m.find()) {
             long seed = Long.parseLong(m.group(1));
             WorldGenerator generator = new WorldGenerator(seed);
-            ter.initialize(WIDTH, HEIGHT);
+            //ter.initialize(WIDTH, HEIGHT);
             TETile[][] world = new TETile[WIDTH][HEIGHT];
             generator.initializeTiles(world);
             generator.drawManyRooms(world);
