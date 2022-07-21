@@ -36,27 +36,23 @@ public class Game {
         //  Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-        long seed = giveSEED(input);
-        WorldGenerator generator = new WorldGenerator(seed);
-        ter.initialize(WIDTH, HEIGHT);
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        generator.initializeTiles(world);
-        generator.drawManyRooms(world);
-        for (int i = 0; i < WorldGenerator.Room.existingRooms.size() - 1; i++) {
-            generator.connectTwoRooms(WorldGenerator.Room.existingRooms.get(i),
-                    WorldGenerator.Room.existingRooms.get(i + 1), world);
-        }
-        generator.addWalls(world);
-        return world;
-    }
-
-    private long giveSEED(String input) {
-        Pattern r = Pattern.compile("N(\\d+)S");
+        Pattern r = Pattern.compile("N?n?(\\d+)\\D+");
         Matcher m = r.matcher(input);
         if (m.find()) {
             long seed = Long.parseLong(m.group(1));
-            return seed;
+            WorldGenerator generator = new WorldGenerator(seed);
+            ter.initialize(WIDTH, HEIGHT);
+            TETile[][] world = new TETile[WIDTH][HEIGHT];
+            generator.initializeTiles(world);
+            generator.drawManyRooms(world);
+            for (int i = 0; i < WorldGenerator.Room.existingRooms.size() - 1; i++) {
+                generator.connectTwoRooms(WorldGenerator.Room.existingRooms.get(i),
+                        WorldGenerator.Room.existingRooms.get(i + 1), world);
+            }
+            generator.addWalls(world);
+            return world;
         }
-        return 0;
+        TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
+        return finalWorldFrame;
     }
 }
