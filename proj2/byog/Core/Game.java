@@ -3,6 +3,10 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
+import java.util.Random;
+
+import static byog.Core.WorldGenerator.*;
+
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
@@ -24,6 +28,7 @@ public class Game {
      * world. However, the behavior is slightly different. After playing with "n123sss:q", the game
      * should save, and thus if we then called playWithInputString with the string "l", we'd expect
      * to get the exact same world back again, since this corresponds to loading the saved game.
+     *
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
@@ -31,8 +36,28 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-
+        if (input.startsWith("N")) {
+            int SEED = giveSEED(input);
+            WorldGenerator generator = new WorldGenerator(SEED);
+            TERenderer ter = new TERenderer();
+            ter.initialize(WIDTH, HEIGHT);
+            TETile[][] world = new TETile[WIDTH][HEIGHT];
+            generator.initializeTiles(world);
+            generator.drawManyRooms(world);
+            for (int i = 0; i < WorldGenerator.room.existingRooms.size() - 1; i++) {
+                generator.connectTwoRooms(WorldGenerator.room.existingRooms.get(i), WorldGenerator.room.existingRooms.get(i + 1), world);
+            }
+            generator.addWalls(world);
+            return world;
+        }
         TETile[][] finalWorldFrame = null;
         return finalWorldFrame;
+    }
+
+    private int giveSEED(String input) {
+        String inputwithoutN = input.substring(1);
+        String[] inputs = inputwithoutN.split("S");
+        int SEED = Integer.parseInt(inputs[0]);
+        return SEED;
     }
 }
