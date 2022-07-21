@@ -36,7 +36,6 @@ public class Game {
         // drawn if the same inputs had been given to playWithKeyboard().
         long seed = giveSEED(input);
         WorldGenerator generator = new WorldGenerator(seed);
-        TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         generator.initializeTiles(world);
