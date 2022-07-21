@@ -36,7 +36,6 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-        if (input.startsWith("N")) {
             int SEED = giveSEED(input);
             WorldGenerator generator = new WorldGenerator(SEED);
             TERenderer ter = new TERenderer();
@@ -49,9 +48,6 @@ public class Game {
             }
             generator.addWalls(world);
             return world;
-        }
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
     }
 
     private int giveSEED(String input) {
