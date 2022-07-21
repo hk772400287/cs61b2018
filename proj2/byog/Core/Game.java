@@ -3,6 +3,8 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Game {
@@ -49,9 +51,12 @@ public class Game {
     }
 
     private long giveSEED(String input) {
-        String inputwithoutN = input.substring(1);
-        String[] inputs = inputwithoutN.split("S");
-        long seed = Long.parseLong(inputs[0]);
-        return seed;
+        Pattern r = Pattern.compile("\\D*(\\d+)\\D*");
+        Matcher m = r.matcher(input);
+        if (m.find()) {
+            long seed = Long.parseLong(m.group(1));
+            return seed;
+        }
+        return 0;
     }
 }
