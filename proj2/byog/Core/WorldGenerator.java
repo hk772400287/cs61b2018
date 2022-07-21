@@ -20,13 +20,13 @@ public class WorldGenerator {
         this.seed = seed;
         random = new Random(seed);
     }
-    static class Room {
+    protected static class Room {
         private Position p;
         private int width;
         private int height;
         static ArrayList<Room> existingRooms = new ArrayList();
 
-        public Room(Position p, int width, int height) {
+        protected Room(Position p, int width, int height) {
             this.p = p;
             this.width = width;
             this.height = height;
