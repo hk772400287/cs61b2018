@@ -15,16 +15,17 @@ public class WorldGenerator {
     private static final int HEIGHT = 30;
     private final long seed;
     private final Random random;
+    protected ArrayList<Room> existingRooms = new ArrayList();
 
     public WorldGenerator(long seed) {
         this.seed = seed;
         random = new Random(seed);
     }
-    protected static class Room {
+    protected class Room {
         private Position p;
         private int width;
         private int height;
-        static ArrayList<Room> existingRooms = new ArrayList();
+
 
         protected Room(Position p, int width, int height) {
             this.p = p;

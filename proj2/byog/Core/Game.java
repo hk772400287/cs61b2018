@@ -47,9 +47,9 @@ public class Game {
             TETile[][] world = new TETile[WIDTH][HEIGHT];
             WorldGenerator.initializeTiles(world);
             generator.drawManyRooms(world);
-            for (int i = 0; i < WorldGenerator.Room.existingRooms.size() - 1; i++) {
-                generator.connectTwoRooms(WorldGenerator.Room.existingRooms.get(i),
-                        WorldGenerator.Room.existingRooms.get(i + 1), world);
+            for (int i = 0; i < generator.existingRooms.size() - 1; i++) {
+                generator.connectTwoRooms(generator.existingRooms.get(i),
+                        generator.existingRooms.get(i + 1), world);
             }
             generator.addWalls(world);
             return world;
