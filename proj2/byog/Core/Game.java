@@ -43,7 +43,7 @@ public class Game {
             WorldGenerator generator = new WorldGenerator(seed);
             //ter.initialize(WIDTH, HEIGHT);
             TETile[][] world = new TETile[WIDTH][HEIGHT];
-            generator.initializeTiles(world);
+            WorldGenerator.initializeTiles(world);
             generator.drawManyRooms(world);
             for (int i = 0; i < WorldGenerator.Room.existingRooms.size() - 1; i++) {
                 generator.connectTwoRooms(WorldGenerator.Room.existingRooms.get(i),
@@ -53,6 +53,7 @@ public class Game {
             return world;
         }
         TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
+        WorldGenerator.initializeTiles(finalWorldFrame);
         return finalWorldFrame;
     }
 }
