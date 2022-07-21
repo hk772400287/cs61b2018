@@ -13,20 +13,20 @@ public class WorldGenerator {
 
     private static final int WIDTH = 80;
     private static final int HEIGHT = 30;
-    private final long SEED;
-    private final Random RANDOM;
+    private final long seed;
+    private final Random random;
 
-    public WorldGenerator(long SEED) {
-        this.SEED = SEED;
-        RANDOM = new Random(SEED);
+    public WorldGenerator(long seed) {
+        this.seed = seed;
+        random = new Random(seed);
     }
-    static class room {
+    static class Room {
         private Position p;
         private int width;
         private int height;
-        static ArrayList<room> existingRooms = new ArrayList();
+        static ArrayList<Room> existingRooms = new ArrayList();
 
-        public room(Position p, int width, int height) {
+        public Room(Position p, int width, int height) {
             this.p = p;
             this.width = width;
             this.height = height;
@@ -54,33 +54,33 @@ public class WorldGenerator {
         }
     }
 
-    public void drawOneRoom(room r, TETile[][] world) {
-        for(int i = 0; i < r.height; i++) {
-            for(int j = 0; j < r.width; j++) {
+    public void drawOneRoom(Room r, TETile[][] world) {
+        for (int i = 0; i < r.height; i++) {
+            for (int j = 0; j < r.width; j++) {
                 world[j + r.p.x][i + r.p.y] = Tileset.GRASS;
             }
         }
     }
 
-    public room randomRoom() {
+    public Room randomRoom() {
         //width = 100, height = 70
         // 1 <= x <= 99  1 <= y <= 69
         while (true) {
-            int x = RANDOM.nextInt(WIDTH - 2) + 1;
-            int y = RANDOM.nextInt(HEIGHT - 2) + 1;
+            int x = random.nextInt(WIDTH - 2) + 1;
+            int y = random.nextInt(HEIGHT - 2) + 1;
             Position p = new Position(x, y);
-            int w = RANDOM.nextInt(5) + 2;
-            int h = RANDOM.nextInt(5) + 2;
+            int w = random.nextInt(5) + 2;
+            int h = random.nextInt(5) + 2;
             if (x + w < WIDTH && y + h < HEIGHT) {
-                return new room(p, w, h);
+                return new Room(p, w, h);
             }
         }
     }
 
     public void drawManyRooms(TETile[][] world) {
-        int roomNumber = RANDOM.nextInt(10) + 10;
-        for(int i = 0; i < roomNumber; i++) {
-            room r = randomRoom();
+        int roomNumber = random.nextInt(10) + 10;
+        for (int i = 0; i < roomNumber; i++) {
+            Room r = randomRoom();
             if (r.isOverlap(world)) {
                 continue;
             }
@@ -89,37 +89,37 @@ public class WorldGenerator {
     }
 
 
-    public void connectTwoRooms(room r1, room r2, TETile[][] world) {
-        int XrangeFrom = max(r1.p.x, r2.p.x);
-        int XrangeTo = min(r1.p.x + r1.width - 1, r2.p.x + r2.width - 1);
-        int YrangeFrom = max(r1.p.y, r2.p.y);
-        int YrangeTo = min(r1.p.y + r1.height - 1, r2.p.y + r2.height - 1);
-        if (XrangeFrom <= XrangeTo) {
-            int Xpath = RANDOM.nextInt(XrangeTo - XrangeFrom + 1) + XrangeFrom;
-            for(int i = YrangeTo; i < YrangeFrom; i++) {
-                world[Xpath][i] = Tileset.GRASS;
+    public void connectTwoRooms(Room r1, Room r2, TETile[][] world) {
+        int xRangeFrom = max(r1.p.x, r2.p.x);
+        int xRangeTo = min(r1.p.x + r1.width - 1, r2.p.x + r2.width - 1);
+        int yRangeFrom = max(r1.p.y, r2.p.y);
+        int yRangeTo = min(r1.p.y + r1.height - 1, r2.p.y + r2.height - 1);
+        if (xRangeFrom <= xRangeTo) {
+            int xPath = random.nextInt(xRangeTo - xRangeFrom + 1) + xRangeFrom;
+            for (int i = yRangeTo; i < yRangeFrom; i++) {
+                world[xPath][i] = Tileset.GRASS;
             }
-        } else if (YrangeFrom <= YrangeTo) {
-            int Ypath = RANDOM.nextInt(YrangeTo - YrangeFrom + 1) + YrangeFrom;
-            for(int i = XrangeTo; i < XrangeFrom; i++) {
-                world[i][Ypath] = Tileset.GRASS;
+        } else if (yRangeFrom <= yRangeTo) {
+            int yPath = random.nextInt(yRangeTo - yRangeFrom + 1) + yRangeFrom;
+            for (int i = xRangeTo; i < xRangeFrom; i++) {
+                world[i][yPath] = Tileset.GRASS;
             }
         } else {
-                drawL(r1, r2, world);
-            }
+            drawL(r1, r2, world);
+        }
     }
 
-    private void drawL(room r1, room r2, TETile[][] world) {
-        int y0 = RANDOM.nextInt(r1.height) + r1.p.y;
-        int x0 = RANDOM.nextInt(r2.width) + r2.p.x;
-        int Xfrom = min(x0, r1.p.x);
-        int Xto = max(x0, r1.p.x);
-        for(int i = Xfrom; i <= Xto; i++) {
+    private void drawL(Room r1, Room r2, TETile[][] world) {
+        int y0 = random.nextInt(r1.height) + r1.p.y;
+        int x0 = random.nextInt(r2.width) + r2.p.x;
+        int xFrom = min(x0, r1.p.x);
+        int xTo = max(x0, r1.p.x);
+        for (int i = xFrom; i <= xTo; i++) {
             world[i][y0] = Tileset.GRASS;
         }
-        int Yfrom = min(y0, r2.p.y);
-        int Yto = max(y0, r2.p.y);
-        for(int i = Yfrom; i <= Yto; i++) {
+        int yFrom = min(y0, r2.p.y);
+        int yTo = max(y0, r2.p.y);
+        for (int i = yFrom; i <= yTo; i++) {
             world[x0][i] = Tileset.GRASS;
         }
     }
