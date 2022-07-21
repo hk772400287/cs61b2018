@@ -52,7 +52,7 @@ public class Game {
     private long giveSEED(String input) {
         String inputwithoutN = input.substring(1);
         String[] inputs = inputwithoutN.split("S");
-        long seed = Integer.parseInt(inputs[0]);
+        long seed = Long.parseLong(inputs[0]);
         return seed;
     }
 }
