@@ -126,10 +126,10 @@ public class Game {
                 world[x][y].draw(x, y);
             }
         }
-        int x = (int)StdDraw.mouseX();
-        int y = (int)StdDraw.mouseY();
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
         String text = "";
-        if ( x >= 2 && x <= WIDTH - 3 && y >= 2 && y <= HEIGHT - 3) {
+        if (x >= 2 && x <= WIDTH - 3 && y >= 2 && y <= HEIGHT - 3) {
             if (world[x][y].equals(Tileset.DOT)) {
                 text = "path";
             } else if (world[x][y].equals(Tileset.WALL)) {
@@ -212,7 +212,8 @@ public class Game {
 
     public TETile[][] makeMovements(WorldGenerator generator, String movement) {
         for (char c : movement.toCharArray()) {
-            if (generator.world[generator.doorPos.x][generator.doorPos.y].equals(Tileset.UNLOCKED_DOOR)) {
+            if (generator.world[generator.doorPos.x][generator.doorPos.y]
+                    .equals(Tileset.UNLOCKED_DOOR)) {
                 return generator.world;
             }
             makeOneMovement(generator, c);
@@ -249,13 +250,13 @@ public class Game {
 
     public void saveToFile(WorldGenerator generator) {
         try {
-            FileOutputStream fos = new FileOutputStream("D:\\cs61b\\cs61b2018\\proj2\\byog\\Core\\savedFile.txt");
+            FileOutputStream fos = new FileOutputStream("D:\\cs61b\\cs61b2018\\proj2" +
+                    "\\byog\\Core\\savedFile.txt");
             ObjectOutputStream outputStream = new ObjectOutputStream(fos);
             outputStream.writeObject(generator);
             outputStream.flush();
             outputStream.close();
-            //fos.close();
-        } catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -263,7 +264,8 @@ public class Game {
     public WorldGenerator loadFile() {
         WorldGenerator generator = null;
         try {
-            FileInputStream fis = new FileInputStream("D:\\cs61b\\cs61b2018\\proj2\\byog\\Core\\savedFile.txt");
+            FileInputStream fis = new FileInputStream("D:\\cs61b\\cs61b2018\\proj2" +
+                    "\\byog\\Core\\savedFile.txt");
             ObjectInputStream inputStream = new ObjectInputStream(fis);
             generator = (WorldGenerator) inputStream.readObject();
             inputStream.close();

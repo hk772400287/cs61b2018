@@ -29,7 +29,7 @@ public class WorldGenerator implements Serializable {
         random = new Random(seed);
         world = new TETile[WIDTH][HEIGHT];
     }
-    protected class Room implements Serializable{
+    protected class Room implements Serializable {
         private Position p;
         private int width;
         private int height;
@@ -201,19 +201,20 @@ public class WorldGenerator implements Serializable {
         int nearestRoomTo0 = getNearesRoomtTo0(roomList);
         switchTwoRooms(nearestRoomTo0, 0, roomList);
         for (int i = 1; i < roomList.size(); i++) {
-            int indexOfNearest = searchNearest(roomList, i, roomList.size() - 1, roomList.get(i - 1));
+            int indexOfNearest = searchNearest(roomList, i, roomList.size() - 1,
+                    roomList.get(i - 1));
             switchTwoRooms(indexOfNearest, i, roomList);
         }
     }
 
     private int distanceBetweenTwoRooms(Room r1, Room r2) {
-        int d = (r1.p.x - r2.p.x) * (r1.p.x - r2.p.x) +
-                (r1.p.y - r2.p.y) * (r1.p.y - r2.p.y);
+        int d = (r1.p.x - r2.p.x) * (r1.p.x - r2.p.x)
+                + (r1.p.y - r2.p.y) * (r1.p.y - r2.p.y);
         return d;
     }
 
     private int getNearesRoomtTo0(ArrayList<Room> roomList) {
-        Room roomAt0 = new Room(new Position(0, 0) , 2, 2);
+        Room roomAt0 = new Room(new Position(0, 0), 2, 2);
         int index = 0;
         int dTo0Min = distanceBetweenTwoRooms(roomList.get(0), roomAt0);
         for (Room r : roomList) {
@@ -234,7 +235,7 @@ public class WorldGenerator implements Serializable {
     private int searchNearest(ArrayList<Room> roomList, int x, int y, Room r) {
         int d = distanceBetweenTwoRooms(roomList.get(x), r);
         int index = x;
-        for ( int i = x; i <= y; i++) {
+        for (int i = x; i <= y; i++) {
             if (distanceBetweenTwoRooms(roomList.get(i), r) < d) {
                 d = distanceBetweenTwoRooms(roomList.get(i), r);
                 index = i;
