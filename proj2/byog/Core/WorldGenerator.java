@@ -4,6 +4,7 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Math.max;
@@ -14,8 +15,12 @@ public class WorldGenerator {
     private static final int WIDTH = 80;
     private static final int HEIGHT = 30;
     private final long seed;
-    private final Random random;
-    protected ArrayList<Room> existingRooms = new ArrayList();
+    protected final Random random;
+    protected Position playerPos;
+    protected static Position doorPos;
+
+    protected ArrayList<Position> dots = new ArrayList<>();
+    protected ArrayList<Room> existingRooms = new ArrayList<>();
 
     public WorldGenerator(long seed) {
         this.seed = seed;
@@ -31,12 +36,11 @@ public class WorldGenerator {
             this.p = p;
             this.width = width;
             this.height = height;
-            existingRooms.add(this);
         }
         private Boolean isOverlap(TETile[][] world) {
             for (int i = -1; i <= height; i++) {
                 for (int j = -1; j <= width; j++) {
-                    if (world[j + p.x][i + p.y] == Tileset.GRASS) {
+                    if (world[j + p.x][i + p.y] == Tileset.DOT) {
                         return true;
                     }
                 }
@@ -45,9 +49,9 @@ public class WorldGenerator {
         }
     }
 
-    private static class Position {
-        private int x;
-        private int y;
+    protected static class Position {
+        protected int x;
+        protected int y;
 
         public Position(int x, int y) {
             this.x = x;
@@ -58,7 +62,8 @@ public class WorldGenerator {
     public void drawOneRoom(Room r, TETile[][] world) {
         for (int i = 0; i < r.height; i++) {
             for (int j = 0; j < r.width; j++) {
-                world[j + r.p.x][i + r.p.y] = Tileset.GRASS;
+                world[j + r.p.x][i + r.p.y] = Tileset.DOT;
+                dots.add(new Position(j + r.p.x, i + r.p.y));
             }
         }
     }
@@ -67,25 +72,27 @@ public class WorldGenerator {
         //width = 100, height = 70
         // 1 <= x <= 99  1 <= y <= 69
         while (true) {
-            int x = random.nextInt(WIDTH - 2) + 1;
-            int y = random.nextInt(HEIGHT - 2) + 1;
+            int x = random.nextInt(WIDTH - 6) + 3;
+            int y = random.nextInt(HEIGHT - 6) + 3;
             Position p = new Position(x, y);
             int w = random.nextInt(5) + 2;
             int h = random.nextInt(5) + 2;
-            if (x + w < WIDTH && y + h < HEIGHT) {
-                return new Room(p, w, h);
+            if (x + w < WIDTH - 2 && y + h < HEIGHT - 2) {
+                Room room = new Room(p, w, h);
+                return room;
             }
         }
     }
 
     public void drawManyRooms(TETile[][] world) {
-        int roomNumber = random.nextInt(10) + 10;
+        int roomNumber = random.nextInt(10) + 15;
         for (int i = 0; i < roomNumber; i++) {
             Room r = randomRoom();
             if (r.isOverlap(world)) {
                 continue;
             }
             drawOneRoom(r, world);
+            existingRooms.add(r);
         }
     }
 
@@ -98,12 +105,14 @@ public class WorldGenerator {
         if (xRangeFrom <= xRangeTo) {
             int xPath = random.nextInt(xRangeTo - xRangeFrom + 1) + xRangeFrom;
             for (int i = yRangeTo; i < yRangeFrom; i++) {
-                world[xPath][i] = Tileset.GRASS;
+                world[xPath][i] = Tileset.DOT;
+                dots.add(new Position(xPath, i));
             }
         } else if (yRangeFrom <= yRangeTo) {
             int yPath = random.nextInt(yRangeTo - yRangeFrom + 1) + yRangeFrom;
             for (int i = xRangeTo; i < xRangeFrom; i++) {
-                world[i][yPath] = Tileset.GRASS;
+                world[i][yPath] = Tileset.DOT;
+                dots.add(new Position(i, yPath));
             }
         } else {
             drawL(r1, r2, world);
@@ -116,12 +125,14 @@ public class WorldGenerator {
         int xFrom = min(x0, r1.p.x);
         int xTo = max(x0, r1.p.x);
         for (int i = xFrom; i <= xTo; i++) {
-            world[i][y0] = Tileset.GRASS;
+            world[i][y0] = Tileset.DOT;
+            dots.add(new Position(i, y0));
         }
         int yFrom = min(y0, r2.p.y);
         int yTo = max(y0, r2.p.y);
         for (int i = yFrom; i <= yTo; i++) {
-            world[x0][i] = Tileset.GRASS;
+            world[x0][i] = Tileset.DOT;
+            dots.add(new Position(x0, i));
         }
     }
 
@@ -134,29 +145,98 @@ public class WorldGenerator {
     }
 
     public void addWalls(TETile[][] w) {
+        ArrayList<Position> wallList = new ArrayList<>();
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
-                if (w[x][y] == Tileset.GRASS) {
+                if (w[x][y] == Tileset.DOT) {
                     for (Position p : neighbors(x, y)) {
                         if (w[p.x][p.y] == Tileset.NOTHING) {
                             w[p.x][p.y] = Tileset.WALL;
+                            for (Position p0 : Arrays.copyOfRange(neighbors(p.x, p.y), 0, 3)) {
+                                if (isWithinWindows(p0)) {
+                                    if (w[p0.x][p0.y] == Tileset.DOT) {
+                                        wallList.add(p);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+        int wallListIndex = random.nextInt(wallList.size());
+        doorPos = wallList.get(wallListIndex);
+        w[doorPos.x][doorPos.y] = Tileset.LOCKED_DOOR;
+    }
+
+
+    private Boolean isWithinWindows(Position p) {
+        return p.x >= 0 && p.x <= WIDTH - 1 && p.y >= 0 && p.y <= HEIGHT - 1;
     }
 
     private Position[] neighbors(int x, int y) {
         Position[] neighbor = new Position[8];
-        neighbor[0] = new Position(x - 1, y - 1);
+        neighbor[0] = new Position(x, y - 1);
         neighbor[1] = new Position(x - 1, y);
-        neighbor[2] = new Position(x - 1, y + 1);
+        neighbor[2] = new Position(x + 1, y);
         neighbor[3] = new Position(x, y + 1);
         neighbor[4] = new Position(x + 1, y + 1);
-        neighbor[5] = new Position(x + 1, y);
+        neighbor[5] = new Position(x - 1, y + 1);
         neighbor[6] = new Position(x + 1, y - 1);
-        neighbor[7] = new Position(x, y - 1);
+        neighbor[7] = new Position(x - 1, y - 1);
         return neighbor;
+    }
+
+    public void setPlayer(TETile[][] w) {
+        int randomDotIndex = random.nextInt(dots.size());
+        playerPos = dots.get(randomDotIndex);
+        w[playerPos.x][playerPos.y] = Tileset.PLAYER;
+    }
+
+
+    public void sortRoomList(ArrayList<Room> roomList) {
+        int nearestRoomTo0 = getNearesRoomtTo0(roomList);
+        switchTwoRooms(nearestRoomTo0, 0, roomList);
+        for (int i = 1; i < roomList.size(); i++) {
+            int indexOfNearest = searchNearest(roomList, i, roomList.size() - 1, roomList.get(i - 1));
+            switchTwoRooms(indexOfNearest, i, roomList);
+        }
+    }
+
+    private int distanceBetweenTwoRooms(Room r1, Room r2) {
+        int d = (r1.p.x - r2.p.x) * (r1.p.x - r2.p.x) +
+                (r1.p.y - r2.p.y) * (r1.p.y - r2.p.y);
+        return d;
+    }
+
+    private int getNearesRoomtTo0(ArrayList<Room> roomList) {
+        Room roomAt0 = new Room(new Position(0, 0) , 2, 2);
+        int index = 0;
+        int dTo0Min = distanceBetweenTwoRooms(roomList.get(0), roomAt0);
+        for (Room r : roomList) {
+            if (distanceBetweenTwoRooms(r, roomAt0) < dTo0Min) {
+                dTo0Min = distanceBetweenTwoRooms(r, roomAt0);
+                index = roomList.indexOf(r);
+            }
+        }
+        return index;
+    }
+
+    private void switchTwoRooms(int x, int y, ArrayList<Room> roomList) {
+        Room temp = roomList.get(x);
+        roomList.set(x, roomList.get(y));
+        roomList.set(y, temp);
+    }
+
+    private int searchNearest(ArrayList<Room> roomList, int x, int y, Room r) {
+        int d = distanceBetweenTwoRooms(roomList.get(x), r);
+        int index = x;
+        for ( int i = x; i <= y; i++) {
+            if (distanceBetweenTwoRooms(roomList.get(i), r) < d) {
+                d = distanceBetweenTwoRooms(roomList.get(i), r);
+                index = i;
+            }
+        }
+        return index;
     }
 }
