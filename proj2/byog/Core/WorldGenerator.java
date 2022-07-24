@@ -3,6 +3,7 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -10,23 +11,25 @@ import java.util.Random;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class WorldGenerator {
+public class WorldGenerator implements Serializable {
 
     private static final int WIDTH = 80;
     private static final int HEIGHT = 30;
     private final long seed;
     protected final Random random;
     protected Position playerPos;
-    protected static Position doorPos;
+    protected Position doorPos;
 
     protected ArrayList<Position> dots = new ArrayList<>();
     protected ArrayList<Room> existingRooms = new ArrayList<>();
+    protected TETile[][] world;
 
     public WorldGenerator(long seed) {
         this.seed = seed;
         random = new Random(seed);
+        world = new TETile[WIDTH][HEIGHT];
     }
-    protected class Room {
+    protected class Room implements Serializable{
         private Position p;
         private int width;
         private int height;
@@ -37,7 +40,7 @@ public class WorldGenerator {
             this.width = width;
             this.height = height;
         }
-        private Boolean isOverlap(TETile[][] world) {
+        private Boolean isOverlap() {
             for (int i = -1; i <= height; i++) {
                 for (int j = -1; j <= width; j++) {
                     if (world[j + p.x][i + p.y] == Tileset.DOT) {
@@ -49,7 +52,7 @@ public class WorldGenerator {
         }
     }
 
-    protected static class Position {
+    protected static class Position implements Serializable {
         protected int x;
         protected int y;
 
@@ -59,7 +62,7 @@ public class WorldGenerator {
         }
     }
 
-    public void drawOneRoom(Room r, TETile[][] world) {
+    public void drawOneRoom(Room r) {
         for (int i = 0; i < r.height; i++) {
             for (int j = 0; j < r.width; j++) {
                 world[j + r.p.x][i + r.p.y] = Tileset.DOT;
@@ -84,20 +87,20 @@ public class WorldGenerator {
         }
     }
 
-    public void drawManyRooms(TETile[][] world) {
+    public void drawManyRooms() {
         int roomNumber = random.nextInt(10) + 15;
         for (int i = 0; i < roomNumber; i++) {
             Room r = randomRoom();
-            if (r.isOverlap(world)) {
+            if (r.isOverlap()) {
                 continue;
             }
-            drawOneRoom(r, world);
+            drawOneRoom(r);
             existingRooms.add(r);
         }
     }
 
 
-    public void connectTwoRooms(Room r1, Room r2, TETile[][] world) {
+    public void connectTwoRooms(Room r1, Room r2) {
         int xRangeFrom = max(r1.p.x, r2.p.x);
         int xRangeTo = min(r1.p.x + r1.width - 1, r2.p.x + r2.width - 1);
         int yRangeFrom = max(r1.p.y, r2.p.y);
@@ -115,11 +118,11 @@ public class WorldGenerator {
                 dots.add(new Position(i, yPath));
             }
         } else {
-            drawL(r1, r2, world);
+            drawL(r1, r2);
         }
     }
 
-    private void drawL(Room r1, Room r2, TETile[][] world) {
+    private void drawL(Room r1, Room r2) {
         int y0 = random.nextInt(r1.height) + r1.p.y;
         int x0 = random.nextInt(r2.width) + r2.p.x;
         int xFrom = min(x0, r1.p.x);
@@ -136,25 +139,25 @@ public class WorldGenerator {
         }
     }
 
-    public static void initializeTiles(TETile[][] w) {
+    public void initializeTiles() {
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
-                w[x][y] = Tileset.NOTHING;
+                world[x][y] = Tileset.NOTHING;
             }
         }
     }
 
-    public void addWalls(TETile[][] w) {
+    public void addWalls() {
         ArrayList<Position> wallList = new ArrayList<>();
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
-                if (w[x][y] == Tileset.DOT) {
+                if (world[x][y] == Tileset.DOT) {
                     for (Position p : neighbors(x, y)) {
-                        if (w[p.x][p.y] == Tileset.NOTHING) {
-                            w[p.x][p.y] = Tileset.WALL;
+                        if (world[p.x][p.y] == Tileset.NOTHING) {
+                            world[p.x][p.y] = Tileset.WALL;
                             for (Position p0 : Arrays.copyOfRange(neighbors(p.x, p.y), 0, 3)) {
                                 if (isWithinWindows(p0)) {
-                                    if (w[p0.x][p0.y] == Tileset.DOT) {
+                                    if (world[p0.x][p0.y] == Tileset.DOT) {
                                         wallList.add(p);
                                     }
                                 }
@@ -166,7 +169,7 @@ public class WorldGenerator {
         }
         int wallListIndex = random.nextInt(wallList.size());
         doorPos = wallList.get(wallListIndex);
-        w[doorPos.x][doorPos.y] = Tileset.LOCKED_DOOR;
+        world[doorPos.x][doorPos.y] = Tileset.LOCKED_DOOR;
     }
 
 
@@ -187,10 +190,10 @@ public class WorldGenerator {
         return neighbor;
     }
 
-    public void setPlayer(TETile[][] w) {
+    public void setPlayer() {
         int randomDotIndex = random.nextInt(dots.size());
         playerPos = dots.get(randomDotIndex);
-        w[playerPos.x][playerPos.y] = Tileset.PLAYER;
+        world[playerPos.x][playerPos.y] = Tileset.PLAYER;
     }
 
 

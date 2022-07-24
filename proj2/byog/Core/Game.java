@@ -6,6 +6,7 @@ import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,12 +29,20 @@ public class Game {
             long seed = getSeed();
             WorldGenerator generator = new WorldGenerator(seed);
             ter.initialize(WIDTH, HEIGHT);
-            TETile[][] world = new TETile[WIDTH][HEIGHT];
-            world = generateNewWorld(seed, generator, world);
-            ter.renderFrame(world);
-            playGame(generator, world);
+            generator.world = generateNewWorld(seed, generator);
+            ter.renderFrame(generator.world);
+            playGame(generator);
             StdDraw.pause(500);
             end();
+        } else if (selectedmenu.equals("l")) {
+            WorldGenerator generator = loadFile();
+            ter.initialize(WIDTH, HEIGHT);
+            ter.renderFrame(generator.world);
+            playGame(generator);
+            StdDraw.pause(500);
+            end();
+        } else if (selectedmenu.equals("q")) {
+            System.exit(200);
         }
     }
 
@@ -87,13 +96,19 @@ public class Game {
         return Long.parseLong(seed);
     }
 
-    public void playGame(WorldGenerator generator, TETile[][] world) {
-        while (world[WorldGenerator.doorPos.x][WorldGenerator.doorPos.y] != Tileset.UNLOCKED_DOOR) {
-            hud(world);
+    public void playGame(WorldGenerator generator) {
+        String keysnotes = "";
+        while (generator.world[generator.doorPos.x][generator.doorPos.y] != Tileset.UNLOCKED_DOOR) {
+            hud(generator.world);
             while (StdDraw.hasNextKeyTyped()) {
                 char nextKey = StdDraw.nextKeyTyped();
-                makeOneMovement(generator, world, nextKey);
-                ter.renderFrame(world);
+                keysnotes += Character.toString(nextKey);
+                if (keysnotes.endsWith(":Q") || keysnotes.endsWith(":q")) {
+                    saveToFile(generator);
+                    System.exit(123);
+                }
+                makeOneMovement(generator, nextKey);
+                ter.renderFrame(generator.world);
             }
         }
     }
@@ -115,11 +130,11 @@ public class Game {
         int y = (int)StdDraw.mouseY();
         String text = "";
         if ( x >= 2 && x <= WIDTH - 3 && y >= 2 && y <= HEIGHT - 3) {
-            if (world[x][y] == Tileset.DOT) {
+            if (world[x][y].equals(Tileset.DOT)) {
                 text = "path";
-            } else if (world[x][y] == Tileset.WALL) {
+            } else if (world[x][y].equals(Tileset.WALL)) {
                 text = "wall";
-            } else if (world[x][y] == Tileset.LOCKED_DOOR) {
+            } else if (world[x][y].equals(Tileset.LOCKED_DOOR)) {
                 text = "locked door";
             }
         }
@@ -155,52 +170,57 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
         input = input.toLowerCase();
-        Pattern r = Pattern.compile("n(\\d+)s([wasd]*):?q?");
-        Matcher m = r.matcher(input);
-        if (m.find()) {
+        Pattern newSeedp = Pattern.compile("n(\\d+)s([wasd]*):?q?");
+        Matcher mNewSeed = newSeedp.matcher(input);
+        Pattern loadp = Pattern.compile("l([wasd]*):?q?");
+        Matcher mload = loadp.matcher(input);
+        WorldGenerator generator = null;
+        if (mNewSeed.find()) {
             //get seed.
-            String target = m.group(1);
+            String target = mNewSeed.group(1);
             long seed = Long.parseLong(target);
-            WorldGenerator generator = new WorldGenerator(seed);
+            generator = new WorldGenerator(seed);
             //generage a new world with player@.
-            TETile[][] world = new TETile[WIDTH][HEIGHT];
-            world = generateNewWorld(seed, generator, world);
+            generator.world = generateNewWorld(seed, generator);
             //make some movements.
-            String movement = m.group(2);
-            world = makeMovements(generator, world, movement);
-            return world;
-        } else {
+            String movement = mNewSeed.group(2);
+            generator.world = makeMovements(generator, movement);
+        } else if (mload.find()) {
             //load a saved world and implement some movements.
-            TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
-            WorldGenerator.initializeTiles(finalWorldFrame);
-            return finalWorldFrame;
+            String movement = mload.group(1);
+            generator = loadFile();
+            generator.world = makeMovements(generator, movement);
         }
+        if (input.endsWith(":q")) {
+            saveToFile(generator);
+        }
+        return generator.world;
     }
 
-    public TETile[][] generateNewWorld(long seed, WorldGenerator generator, TETile[][] world) {
-        WorldGenerator.initializeTiles(world);
-        generator.drawManyRooms(world);
+    public TETile[][] generateNewWorld(long seed, WorldGenerator generator) {
+        generator.initializeTiles();
+        generator.drawManyRooms();
         generator.sortRoomList(generator.existingRooms);
         for (int i = 0; i < generator.existingRooms.size() - 1; i++) {
             generator.connectTwoRooms(generator.existingRooms.get(i),
-                    generator.existingRooms.get(i + 1), world);
+                    generator.existingRooms.get(i + 1));
         }
-        generator.addWalls(world);
-        generator.setPlayer(world);
-        return world;
+        generator.addWalls();
+        generator.setPlayer();
+        return generator.world;
     }
 
-    public TETile[][] makeMovements(WorldGenerator generator, TETile[][] world, String movement) {
+    public TETile[][] makeMovements(WorldGenerator generator, String movement) {
         for (char c : movement.toCharArray()) {
-            if (world[WorldGenerator.doorPos.x][WorldGenerator.doorPos.y] == Tileset.UNLOCKED_DOOR) {
-                return world;
+            if (generator.world[generator.doorPos.x][generator.doorPos.y].equals(Tileset.UNLOCKED_DOOR)) {
+                return generator.world;
             }
-            makeOneMovement(generator, world, c);
+            makeOneMovement(generator, c);
         }
-        return world;
+        return generator.world;
     }
 
-    private TETile[][] makeOneMovement(WorldGenerator generator, TETile[][] world, char c) {
+    private TETile[][] makeOneMovement(WorldGenerator generator, char c) {
         Position nextPos = new Position(0, 0);
         if (c == 'a' || c == 'A') {
             nextPos.x = generator.playerPos.x - 1;
@@ -211,18 +231,46 @@ public class Game {
         } else if (c == 'd' || c == 'D') {
             nextPos.x = generator.playerPos.x + 1;
             nextPos.y = generator.playerPos.y;
-        } else {
+        } else if (c == 's' || c == 'S') {
             nextPos.x = generator.playerPos.x;
             nextPos.y = generator.playerPos.y - 1;
+        } else {
+            return generator.world;
         }
-        if (world[nextPos.x][nextPos.y] == Tileset.LOCKED_DOOR) {
-            world[nextPos.x][nextPos.y] = Tileset.UNLOCKED_DOOR;
-        } else if (world[nextPos.x][nextPos.y] != Tileset.WALL) {
-            world[generator.playerPos.x][generator.playerPos.y] = Tileset.DOT;
+        if (generator.world[nextPos.x][nextPos.y].equals(Tileset.LOCKED_DOOR)) {
+            generator.world[nextPos.x][nextPos.y] = Tileset.UNLOCKED_DOOR;
+        } else if (!generator.world[nextPos.x][nextPos.y].equals(Tileset.WALL)) {
+            generator.world[generator.playerPos.x][generator.playerPos.y] = Tileset.DOT;
             generator.playerPos = nextPos;
-            world[generator.playerPos.x][generator.playerPos.y] = Tileset.PLAYER;
+            generator.world[generator.playerPos.x][generator.playerPos.y] = Tileset.PLAYER;
         }
-        return world;
+        return generator.world;
+    }
+
+    public void saveToFile(WorldGenerator generator) {
+        try {
+            FileOutputStream fos = new FileOutputStream("D:\\cs61b\\cs61b2018\\proj2\\byog\\Core\\savedFile.txt");
+            ObjectOutputStream outputStream = new ObjectOutputStream(fos);
+            outputStream.writeObject(generator);
+            outputStream.flush();
+            outputStream.close();
+            //fos.close();
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public WorldGenerator loadFile() {
+        WorldGenerator generator = null;
+        try {
+            FileInputStream fis = new FileInputStream("D:\\cs61b\\cs61b2018\\proj2\\byog\\Core\\savedFile.txt");
+            ObjectInputStream inputStream = new ObjectInputStream(fis);
+            generator = (WorldGenerator) inputStream.readObject();
+            inputStream.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        return generator;
     }
 
 }
