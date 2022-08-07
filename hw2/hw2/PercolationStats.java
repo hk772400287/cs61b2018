@@ -20,7 +20,7 @@ public class PercolationStats {
                     int col = StdRandom.uniform(N);
                     per.open(row, col);
                 }
-                double x = per.numberOfOpenSites() / (N * N);
+                double x = per.numberOfOpenSites() * 1.0 / (N * N);
                 xt[i] = x;
             }
         } else {
@@ -53,5 +53,15 @@ public class PercolationStats {
         return μ + 1.96 * σ /  java.lang.Math.sqrt(T);
     }
 
+    public static void main(String[] args) {
+        // use for unit testing (not required)
+        PercolationStats per = new PercolationStats(20, 10, new PercolationFactory());
+        for (double x : per.xt) {
+            System.out.println(x);
+        }
+        System.out.println(per.mean());
+        System.out.println(per.stddev());
+
+    }
 
 }

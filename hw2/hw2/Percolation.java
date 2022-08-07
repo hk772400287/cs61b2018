@@ -33,7 +33,7 @@ public class Percolation {
                 }
             }
         } else {
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new java.lang.IllegalArgumentException();
         }
     }
 
