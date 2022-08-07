@@ -6,15 +6,15 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
-    public double[] xt;
-    public int T;
+    private double[] xt;
+    private int T;
     public PercolationStats(int N, int T, PercolationFactory pf) {
         // perform T independent experiments on an N-by-N grid
         if (N > 0 && T > 0) {
-            Percolation per = pf.make(N);
             this.T = T;
             xt = new double[T];
             for (int i = 0; i < T; i++) {
+                Percolation per = pf.make(N);
                 while (!per.percolates()) {
                     int row = StdRandom.uniform(N);
                     int col = StdRandom.uniform(N);

@@ -4,13 +4,13 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
-    public WeightedQuickUnionUF uf;
-    public WeightedQuickUnionUF uf2;
-    public boolean[][] trackIsOpen;
+    private WeightedQuickUnionUF uf;
+    private WeightedQuickUnionUF uf2;
+    private boolean[][] trackIsOpen;
 
-    public int openSize;
+    private int openSize;
 
-    public int N;
+    private int N;
 
     public Percolation(int N) {
         // create N-by-N grid, with all sites initially blocked
@@ -98,6 +98,9 @@ public class Percolation {
     }
     public boolean percolates() {
         // does the system percolate?
+        if (N == 1) {
+            return isOpen(0, 0);
+        }
         return uf.connected(N * N, N * N + 1);
     }
     public static void main(String[] args) {
