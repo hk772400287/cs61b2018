@@ -140,8 +140,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             p.right = removeHelper(key, p.right);
         } else {
             if (p.left == null) {
+                size -= 1;
                 return p.right;
             } else if (p.right == null) {
+                size -= 1;
                 return p.left;
             } else {
                 Node max = max(p.left);
@@ -211,11 +213,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             System.out.println(key);
         }
         System.out.println(bstmap.keySet());
-        System.out.println(bstmap.remove("hello"));
+        System.out.println(bstmap.size());
+        bstmap.remove("hello");
+        for (String key : bstmap) {
+            System.out.println(key);
+        }
         System.out.println(bstmap.keySet());
-        System.out.println(bstmap.remove("cat"));
-        System.out.println(bstmap.keySet());
-
+        System.out.println(bstmap.size());
     }
 }
 
