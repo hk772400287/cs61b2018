@@ -151,20 +151,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
 
     private Node removeHelper(K key, Node p) {
-        if (p == null) {
-            return null;
-        }
-        int cmp = key.compareTo(p.key);
-        if (cmp < 0) {
-            p.left = removeHelper(key, p.left);
-        } else if (cmp > 0) {
-            p.right = removeHelper(key, p.right);
-        } else {
-            this.valueOfRemovedItem = p.value;
-            return deleteP(p);
-        }
-        return p;
+       return removeHelper2(key, p.value, p);
     }
+
 
    private Node deleteP(Node p) {
        if (p.left == null) {
