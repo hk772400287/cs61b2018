@@ -27,6 +27,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         this.clear();
     }
 
+    public MyHashMap(int capacity) {
+        buckets = new ArrayMap[capacity];
+        this.clear();
+    }
+
     /* Removes all of the mappings from this map. */
     @Override
     public void clear() {
@@ -54,6 +59,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
         int keyIndex = hash(key);
         return this.buckets[keyIndex].get(key);
     }
@@ -61,30 +69,33 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (value == null) {
+            remove(key);
+            return;
+        }
         if (loadFactor() > MAX_LF) {
             resizing(this.buckets.length * 2);
         }
         int keyIndex = hash(key);
-        int oldSize = this.buckets[keyIndex].size();
-        this.buckets[keyIndex].put(key, value);
-        if (this.buckets[keyIndex].size() == oldSize + 1) {
+        if (!this.buckets[keyIndex].containsKey(key)) {
             this.size += 1;
         }
+        this.buckets[keyIndex].put(key, value);
     }
 
     private void resizing(int newBucketsLength) {
-        ArrayMap<K, V> [] newBuckets = new ArrayMap[newBucketsLength];
-        for (int i = 0; i < newBucketsLength; i += 1) {
-            newBuckets[i] = new ArrayMap<>();
-        }
+        MyHashMap<K, V> temp = new MyHashMap<>(newBucketsLength);
         for (ArrayMap<K, V> bucket : this.buckets) {
-            for (K key : bucket) {
+            for (K key : bucket.keySet()) {
                 V val = bucket.get(key);
-                int newIndexToPut = Math.floorMod(key.hashCode(), newBucketsLength);
-                newBuckets[newIndexToPut].put(key, val);
+                temp.put(key, val);
             }
         }
-        this.buckets = newBuckets;
+        this.buckets = temp.buckets;
+        this.size = temp.size;
     }
 
     /* Returns the number of key-value mappings in this map. */
@@ -112,13 +123,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * UnsupportedOperationException. */
     @Override
     public V remove(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
         int keyIndex = hash(key);
-        int oldSize = this.buckets[keyIndex].size();
-        V returnVal = this.buckets[keyIndex].remove(key);
-        if (this.buckets[keyIndex].size() == oldSize - 1) {
+        if (this.buckets[keyIndex].containsKey(key)) {
             this.size -= 1;
         }
-        return returnVal;
+        return this.buckets[keyIndex].remove(key);
     }
 
     /* Removes the entry for the specified key only if it is currently mapped to
@@ -126,6 +138,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * throw an UnsupportedOperationException.*/
     @Override
     public V remove(K key, V value) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (value == null) {
+            return null;
+        }
         int keyIndex = hash(key);
         int oldSize = this.buckets[keyIndex].size();
         V returnVal = this.buckets[keyIndex].remove(key, value);
