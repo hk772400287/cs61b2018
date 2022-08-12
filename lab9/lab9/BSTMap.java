@@ -155,22 +155,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
 
-   private Node deleteP(Node p) {
-       if (p.left == null) {
-           size -= 1;
-           return p.right;
-       } else if (p.right == null) {
-           size -= 1;
-           return p.left;
-       } else {
-           Node min = min(p.right);
-           p.right = deleteMin(p.right);
-           size -= 1;
-           p.key = min.key;
-           p.value = min.value;
-           return p;
-       }
-   }
     private Node deleteMax(Node p) {
         if (p.right == null) {
             return p.left;
@@ -230,7 +214,20 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         } else {
             if (p.value.equals(val)) {
                 this.valueOfRemovedItem = val;
-                return deleteP(p);
+                if (p.left == null) {
+                    size -= 1;
+                    return p.right;
+                } else if (p.right == null) {
+                    size -= 1;
+                    return p.left;
+                } else {
+                    Node min = min(p.right);
+                    p.right = deleteMin(p.right);
+                    size -= 1;
+                    p.key = min.key;
+                    p.value = min.value;
+                    return p;
+                }
             }
         }
         return p;
