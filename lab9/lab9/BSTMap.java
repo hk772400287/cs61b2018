@@ -174,8 +174,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
            size -= 1;
            return p.left;
        } else {
-           Node min = min(p.left);
-           p.right = deleteMin(p.left);
+           Node min = min(p.right);
+           p.right = deleteMin(p.right);
            size -= 1;
            p.key = min.key;
            p.value = min.value;
@@ -277,10 +277,11 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         bstmap.put("cat", 10);
         bstmap.put("fish", 22);
         bstmap.put("zebra", 90);
-        for (String key : bstmap.keySet()) {
-            System.out.println(key);
-        }
-        System.out.println(bstmap.remove("hello", 4));
+        System.out.println(bstmap.remove("hello"));
+        System.out.println(bstmap.remove("cat"));
+        System.out.println(bstmap.keySet());
+
+
     }
 }
 
