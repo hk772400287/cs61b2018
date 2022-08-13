@@ -108,6 +108,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         }
+        if (value == null) {
+            remove(key);
+        }
         root = putHelper(key, value, root);
     }
 
@@ -145,13 +148,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             throw new IllegalArgumentException("key is null");
         }
         this.valueOfRemovedItem = null;
-        root = removeHelper(key, root);
+        root = removeHelper(key, null, root);
         return this.valueOfRemovedItem;
-    }
-
-
-    private Node removeHelper(K key, Node p) {
-       return removeHelper2(key, p.value, p);
     }
 
 
@@ -198,22 +196,22 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             throw new IllegalArgumentException("key is null");
         }
         this.valueOfRemovedItem = null;
-        root = removeHelper2(key, value, root);
+        root = removeHelper(key, value, root);
         return this.valueOfRemovedItem;
     }
 
-    private Node removeHelper2(K key, V val, Node p) {
+    private Node removeHelper(K key, V val, Node p) {
         if (p == null) {
             return null;
         }
         int cmp = key.compareTo(p.key);
         if (cmp < 0) {
-            p.left = removeHelper(key, p.left);
+            p.left = removeHelper(key, val, p.left);
         } else if (cmp > 0) {
-            p.right = removeHelper(key, p.right);
+            p.right = removeHelper(key, val, p.right);
         } else {
-            if (p.value.equals(val)) {
-                this.valueOfRemovedItem = val;
+            if (val == null || p.value.equals(val)) {
+                this.valueOfRemovedItem = p.value;
                 if (p.left == null) {
                     size -= 1;
                     return p.right;
