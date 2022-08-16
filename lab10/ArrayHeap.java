@@ -165,7 +165,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         T returnItem = contents[1].myItem;
         swap(1, size);
         contents[size] = null;
-        sink(1);
+        if (size > 1) {
+            sink(1);
+        }
         size--;
         return returnItem;
     }
@@ -275,6 +277,20 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
         this.contents = temp;
     }
+
+//    public static void main(String args[]) {
+//        ArrayHeap<String> pq = new ArrayHeap<>();
+//        pq.insert("a", 1);
+//        pq.insert("b", 2);
+//        pq.insert("c", 3);
+//        pq.insert("d", 4);
+////        pq.insert("e", 4);
+////        pq.insert("f", 6);
+//        pq.removeMin();
+//        pq.removeMin();
+//        pq.removeMin();
+////        pq.removeMin();
+//    }
 
     @Test
     public void testIndexing() {
