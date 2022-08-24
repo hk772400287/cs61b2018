@@ -8,7 +8,7 @@ public class Board implements WorldState {
     private static int BLANK = 0;
     public Board(int[][] tiles) {
         int[][] copy = new int[tiles.length][tiles.length];
-        for(int i = 0; i < tiles.length; i++) {
+        for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
                 copy[i][j] = tiles[i][j];
             }
@@ -17,7 +17,7 @@ public class Board implements WorldState {
     }
 
     public int tileAt(int i, int j) {
-        if (i < 0 || i > ws[i].length|| j < 0 || j > ws[i].length) {
+        if (i < 0 || i > ws[i].length || j < 0 || j > ws[i].length) {
             throw new java.lang.IndexOutOfBoundsException();
         }
         return ws[i][j];
@@ -65,7 +65,7 @@ public class Board implements WorldState {
         int count = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (tileAt(i, j) != v) {
+                if (tileAt(i, j) != v && tileAt(i, j) != 0) {
                     count++;
                 }
                 v++;
@@ -103,23 +103,41 @@ public class Board implements WorldState {
     public int estimatedDistanceToGoal() {
         return this.manhattan();
     }
+
+    @Override
     public boolean equals(Object y) {
-        if (y == null) {
-            return false;
-        }
-        if (this.getClass().equals(y.getClass())) {
-            Board that = (Board) y;
-            int N = this.size();
-            for(int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (this.tileAt(i, j)!= that.tileAt(i, j)) {
-                        return false;
-                    }
-                }
-            }
+        if (this == y) {
             return true;
         }
-        return false;
+        if (y == null || this.getClass() != y.getClass()) {
+            return false;
+        }
+        Board that = (Board) y;
+        if (this.size() != that.size()) {
+            return false;
+        }
+        int N = this.size();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (this.tileAt(i, j) != that.tileAt(i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int hc = 0;
+        for (int i = 0; i < this.size(); i++) {
+            for (int j = 0; j < this.size(); j++) {
+                hc = hc * 31;
+                hc += tileAt(i, j);
+            }
+        }
+        return hc;
     }
 
     /** Returns the string representation of the board.
