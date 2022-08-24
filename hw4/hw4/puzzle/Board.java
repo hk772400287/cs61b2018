@@ -71,9 +71,6 @@ public class Board implements WorldState {
                 v++;
             }
         }
-        if (this.ws[N - 1][N - 1] == 0) {
-            count--;
-        }
         return count;
 
     }
