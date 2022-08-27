@@ -22,6 +22,7 @@ public class MazeCycles extends MazeExplorer {
 
     @Override
     public void solve() {
+        announce();
         for (int s = 0; s < maze.N() * maze.N(); s++) {
             if (cycleFound) {
                 break;
