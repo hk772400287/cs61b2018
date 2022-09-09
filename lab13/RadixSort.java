@@ -34,10 +34,9 @@ public class RadixSort {
      * @param index The position to sort the Strings on.
      */
     private static void sortHelperLSD(String[] asciis, int index) {
-        if (index == -1) {
+        if (index < 0) {
             return;
         }
-        String[] copy = asciis.clone();
         int[] count = new int[256];
         int placeHolder = 0;
         for (String s : asciis) {
@@ -54,6 +53,7 @@ public class RadixSort {
             startPoint[i] = pos;
             pos += count[i];
         }
+        String[] copy = asciis.clone();
         for (String s : copy) {
             if (s.length() <= index) {
                 asciis[startPointOfPlaceHolder] = s;
@@ -82,7 +82,7 @@ public class RadixSort {
     }
 
     public static void main(String[] args) {
-        String[] before = {"ab", "a", "sad", "dad", "s", "grey"};
+        String[] before = {"abdtyriuyiuyiu", "abhjftysrtstdytyrtydrdrtsesrtdt", "sad", "dad", "s", "grey86784563453465365474746"};
         String[] after = sort(before);
         for (String s : before) {
             System.out.print(s + " ");
