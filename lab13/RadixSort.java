@@ -16,8 +16,15 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
-        return null;
+        int maxLength = Integer.MIN_VALUE;
+        for (String s : asciis) {
+            if (s.length() > maxLength) {
+                maxLength = s.length();
+            }
+        }
+        String[] sorted = asciis.clone();
+        sortHelperLSD(sorted, maxLength);
+        return sorted;
     }
 
     /**
@@ -27,8 +34,36 @@ public class RadixSort {
      * @param index The position to sort the Strings on.
      */
     private static void sortHelperLSD(String[] asciis, int index) {
-        // Optional LSD helper method for required LSD radix sort
-        return;
+        if (index == -1) {
+            return;
+        }
+        String[] copy = asciis.clone();
+        int[] count = new int[256];
+        int placeHolder = 0;
+        for (String s : asciis) {
+            if (s.length() <= index) {
+                placeHolder += 1;
+            } else {
+                count[s.charAt(index)] += 1;
+            }
+        }
+        int[] startPoint = new int[256];
+        int startPointOfPlaceHolder = 0;
+        int pos = placeHolder;
+        for (int i = 0; i < count.length; i++) {
+            startPoint[i] = pos;
+            pos += count[i];
+        }
+        for (String s : copy) {
+            if (s.length() <= index) {
+                asciis[startPointOfPlaceHolder] = s;
+                startPointOfPlaceHolder += 1;
+            } else {
+                asciis[startPoint[s.charAt(index)]] = s;
+                startPoint[s.charAt(index)] += 1;
+            }
+        }
+        sortHelperLSD(asciis, index - 1);
     }
 
     /**
@@ -44,5 +79,17 @@ public class RadixSort {
     private static void sortHelperMSD(String[] asciis, int start, int end, int index) {
         // Optional MSD helper method for optional MSD radix sort
         return;
+    }
+
+    public static void main(String[] args) {
+        String[] before = {"ab", "a", "sad", "dad", "s", "grey"};
+        String[] after = sort(before);
+        for (String s : before) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
+        for (String s : after) {
+            System.out.print(s + " ");
+        }
     }
 }
