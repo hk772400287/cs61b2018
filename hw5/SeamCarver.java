@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.Picture;
 import java.awt.*;
 
 public class SeamCarver {
-    private final Picture picture;
+    private Picture picture;
     public SeamCarver(Picture picture) {
         this.picture = picture;
     }
