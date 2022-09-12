@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.Picture;
 import java.awt.*;
 
 public class SeamCarver {
-    private Picture picture;
+    private final Picture picture;
     public SeamCarver(Picture picture) {
         this.picture = picture;
     }
@@ -76,7 +76,9 @@ public class SeamCarver {
         double min;
         for (int y = 1; y < this.height(); y++) {
             for (int x = 0; x < this.width(); x++) {
-                if (x == 0) {
+                if (this.width() == 1) {
+                    min = setMinAndEdge(x, x, M, edgeTo, x, y);
+                } else if (x == 0) {
                     min = setMinAndEdge(x, x + 1, M, edgeTo, x, y);
                 } else if (x == width() - 1) {
                     min = setMinAndEdge(x - 1, x, M, edgeTo, x, y);
@@ -113,7 +115,7 @@ public class SeamCarver {
 
     private Picture rotate90(Picture original, String direction) {
         Picture dest = new Picture(original.height(), original.width());
-        for (int y = 0; y < original.height(); y++)
+        for (int y = 0; y < original.height(); y++) {
             for (int x = 0; x < original.width(); x++) {
                 if (direction.equals("right")) {
                     dest.set(original.height() - 1 - y, x, original.get(x, y));
@@ -121,6 +123,7 @@ public class SeamCarver {
                     dest.set(y, original.width() - 1 - x, original.get(x, y));
                 }
             }
+        }
         return dest;
     }
     public void removeHorizontalSeam(int[] seam) {
