@@ -5,7 +5,7 @@ import java.awt.*;
 public class SeamCarver {
     private Picture picture;
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
     }
     public Picture picture() {
         return new Picture(this.picture);
@@ -133,4 +133,12 @@ public class SeamCarver {
     public void removeVerticalSeam(int[] seam) {
         SeamRemover.removeVerticalSeam(this.picture, seam);
     }
+
+//    public static void main(String[] args) {
+//        Picture p = new Picture("images/1x8.png");
+//        SeamCarver sc = new SeamCarver(p);
+//        sc.findVerticalSeam();
+//        sc.findHorizontalSeam();
+//        System.out.println(sc.picture().equals(p));
+//    }
 }
