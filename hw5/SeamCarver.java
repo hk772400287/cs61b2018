@@ -8,7 +8,7 @@ public class SeamCarver {
         this.picture = picture;
     }
     public Picture picture() {
-        return this.picture;
+        return new Picture(this.picture);
     }
     public int width() {
         return this.picture.width();
@@ -111,7 +111,7 @@ public class SeamCarver {
         return minPath;
     }
 
-    public Picture rotate90(Picture original, String direction) {
+    private Picture rotate90(Picture original, String direction) {
         Picture dest = new Picture(original.height(), original.width());
         for (int y = 0; y < original.height(); y++)
             for (int x = 0; x < original.width(); x++) {
