@@ -116,9 +116,9 @@ public class SeamCarver {
         for (int y = 0; y < original.height(); y++)
             for (int x = 0; x < original.width(); x++) {
                 if (direction.equals("right")) {
-                    dest.setRGB(original.height() - 1 - y, x, original.getRGB(x, y));
+                    dest.set(original.height() - 1 - y, x, original.get(x, y));
                 } else if (direction.equals("left")) {
-                    dest.setRGB(y, original.width() - 1 - x, original.getRGB(x, y));
+                    dest.set(y, original.width() - 1 - x, original.get(x, y));
                 }
             }
         return dest;
