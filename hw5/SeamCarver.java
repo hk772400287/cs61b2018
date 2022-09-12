@@ -51,9 +51,9 @@ public class SeamCarver {
 
     private int computeGradient(Color a, Color b) {
         int ared = a.getRed();
-        return (a.getRed() - b.getRed()) * (a.getRed() - b.getRed()) +
-                (a.getGreen() - b.getGreen()) * (a.getGreen() - b.getGreen()) +
-                        (a.getBlue() - b.getBlue()) * (a.getBlue() - b.getBlue());
+        return (a.getRed() - b.getRed()) * (a.getRed() - b.getRed())
+                + (a.getGreen() - b.getGreen()) * (a.getGreen() - b.getGreen())
+                + (a.getBlue() - b.getBlue()) * (a.getBlue() - b.getBlue());
     }
 
     private double setMinAndEdge(int range1, int range2, double[][] M, int[][] edgeTo, int x, int y) {
