@@ -8,7 +8,7 @@ import java.util.*;
 public class Boggle {
     
     // File path of dictionary file
-    static String dictPath = "trivial_words.txt";
+    static String dictPath = "words.txt";
 
     /**
      * Solves a Boggle puzzle.
@@ -21,6 +21,9 @@ public class Boggle {
      *         have them in ascending alphabetical order.
      */
     public static List<String> solve(int k, String boardFilePath) {
+        if (k < 0) {
+            throw new IllegalArgumentException("k is non-positive");
+        }
         Trie trie = new Trie();
         MaxPQ<String> pq = new MaxPQ<>(new cmp());
         In in = new In(boardFilePath);
@@ -29,6 +32,11 @@ public class Boggle {
             board.add(in.readLine());
         }
         int N = board.get(0).length();
+        for (String s : board) {
+            if (s.length() != N) {
+                throw new IllegalArgumentException("The input board is not rectangular.");
+            }
+        }
         int M = board.size();
         char[][] chars = new char[N][M];
         for (int j = 0; j < M; j++) {
@@ -135,7 +143,7 @@ public class Boggle {
     }
 
     public static void main(String[] args) {
-        List<String> list = Boggle.solve(7, "exampleBoard2.txt");
+        List<String> list = Boggle.solve(7, "exampleBoard.txt");
         for (String s : list) {
             System.out.println(s);
         }
