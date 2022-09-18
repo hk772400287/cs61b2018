@@ -47,7 +47,7 @@ public class Boggle {
         for (int j = 0; j < M; j++) {
             for (int i = 0; i < N; i++) {
                 boolean[][] mark = new boolean[N][M];
-                dfs("", new Position(i, j), trie, pq, chars, mark);
+                dfs("", i, j, trie, pq, chars, mark);
             }
         }
         List<String> l = new ArrayList<>();
@@ -76,14 +76,6 @@ public class Boggle {
         }
     }
 
-    private static class Position {
-        private int x;
-        private int y;
-        private Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 
 //    private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, Boolean[][] mark) {
 //        Stack<Stack<Position>> stack = new Stack<>();
@@ -108,41 +100,31 @@ public class Boggle {
 //        }
 //    }
 
-    private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, boolean[][] mark) {
-        mark[p.x][p.y] = true;
-        boolean[] npiw = trie.noPruneisWord(s, chars[p.x][p.y]);
+    private static void dfs(String s, int x, int y, Trie trie, MaxPQ<String> pq, char[][] chars, boolean[][] mark) {
+        mark[x][y] = true;
+        boolean[] npiw = trie.noPruneisWord(s, chars[x][y]);
         if (!npiw[0]) {
-            mark[p.x][p.y] = false;
+            mark[x][y] = false;
             return;
         }
         if (npiw[1]) {
-            pq.insert(s + chars[p.x][p.y]);
+            pq.insert(s + chars[x][y]);
         }
-        for (Position pos : neighbors(p, chars)) {
-            if (isInBoard(pos, chars) && !mark[pos.x][pos.y]) {
-                dfs(s + chars[p.x][p.y], pos, trie, pq, chars, mark);
+        for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+                if (isInBoard(i, j, chars) && !mark[i][j]) {
+                    dfs(s + chars[x][y], i, j, trie, pq, chars, mark);
+                }
             }
         }
-        mark[p.x][p.y] = false;
+        mark[x][y] = false;
     }
 
-    private static List<Position> neighbors(Position p, char[][] chars) {
-        List<Position> l = new ArrayList<>();
-        l.add(new Position(p.x - 1, p.y - 1));
-        l.add(new Position(p.x - 1, p.y));
-        l.add(new Position(p.x - 1, p.y + 1));
-        l.add(new Position(p.x, p.y - 1));
-        l.add(new Position(p.x, p.y + 1));
-        l.add(new Position(p.x + 1, p.y - 1));
-        l.add(new Position(p.x + 1, p.y));
-        l.add(new Position(p.x + 1, p.y + 1));
-        return l;
-    }
 
-    private static Boolean isInBoard(Position p, char[][] chars) {
+    private static boolean isInBoard(int x, int y, char[][] chars) {
         int M = chars[0].length;
         int N = chars.length;
-        return p.x >= 0 && p.x < N && p.y >= 0 && p.y < M;
+        return x >= 0 && x < N && y >= 0 && y < M;
     }
 
     public static void main(String[] args) {
