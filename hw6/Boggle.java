@@ -110,11 +110,12 @@ public class Boggle {
 
     private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, boolean[][] mark) {
         mark[p.x][p.y] = true;
-        if (!trie.noPruneisWord(s, chars[p.x][p.y])[0]) {
+        boolean[] npiw = trie.noPruneisWord(s, chars[p.x][p.y]);
+        if (!npiw[0]) {
             mark[p.x][p.y] = false;
             return;
         }
-        if (trie.noPruneisWord(s, chars[p.x][p.y])[1]) {
+        if (npiw[1]) {
             pq.insert(s + chars[p.x][p.y]);
         }
         for (Position pos : neighbors(p, chars)) {
