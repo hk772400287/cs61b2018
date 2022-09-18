@@ -25,7 +25,7 @@ public class Boggle {
             throw new IllegalArgumentException("k is non-positive");
         }
         Trie trie = new Trie();
-        MaxPQ<String> pq = new MaxPQ<>(new cmp());
+        MaxPQ<String> pq = new MaxPQ<>(new CMP());
         In in = new In(boardFilePath);
         ArrayList<String> board = new ArrayList<>();
         while (in.hasNextLine()) {
@@ -50,7 +50,6 @@ public class Boggle {
                 dfs("", new Position(i, j), trie, pq, chars, mark);
             }
         }
-//      HashSet<String> hs = new HashSet<>();
         List<String> l = new ArrayList<>();
         int i = 0;
         while (!pq.isEmpty()) {
@@ -67,7 +66,7 @@ public class Boggle {
         return l;
     }
 
-    private static class cmp implements Comparator<String> {
+    private static class CMP implements Comparator<String> {
         @Override
         public int compare(String o1, String o2) {
             if (o1.length() == o2.length()) {
@@ -87,19 +86,22 @@ public class Boggle {
     }
 
 //    private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, Boolean[][] mark) {
-//        Stack<Position> stack = new Stack<>();
-//        stack.add(p);
+//        Stack<Stack<Position>> stack = new Stack<>();
+//        stack.add(new Stack<>());
+//        stack.peek().add(p);
 //        while (!stack.empty()) {
-//            Position pos = stack.pop();
+//            Position pos = stack.peek().pop();
 //            mark[pos.x][pos.y] = true;
 //            if (trie.noPrune(s, chars[pos.x][pos.y])) {
 //                s += chars[pos.x][pos.y];
 //                if (trie.isAWord(s)) {
 //                    pq.insert(s);
 //                }
-//                for (Position pp : neighbors(pos, chars)) {
-//                    if (isInBoard(pp, chars) && !mark[pp.x][pp.y]) {
-//                        stack.add(pp);
+//                for (Position neighbor : neighbors(pos, chars)) {
+//                    if (isInBoard(neighbor, chars) && !mark[neighbor.x][neighbor.y]) {
+//                        Stack<Position> innerStack = new Stack<>();
+//                        innerStack.add(neighbor);
+//                        stack.add(innerStack);
 //                    }
 //                }
 //            }
@@ -108,11 +110,11 @@ public class Boggle {
 
     private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, boolean[][] mark) {
         mark[p.x][p.y] = true;
-        if (!trie.noPrune(s, chars[p.x][p.y])) {
+        if (!trie.noPruneisWord(s, chars[p.x][p.y])[0]) {
             mark[p.x][p.y] = false;
             return;
         }
-        if (trie.isAWord(s + chars[p.x][p.y])) {
+        if (trie.noPruneisWord(s, chars[p.x][p.y])[1]) {
             pq.insert(s + chars[p.x][p.y]);
         }
         for (Position pos : neighbors(p, chars)) {
