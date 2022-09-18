@@ -38,16 +38,6 @@ public class Trie {
     }
 
 
-
-//    public Boolean isAWord(String s) {
-//        Node r = this.trie;
-//        for (int i = 0; i < s.length(); i++) {
-//            char ch = s.toCharArray()[i];
-//            r = r.next.get(ch);
-//        }
-//        return r.isWord;
-//    }
-
     public boolean[] noPruneisWord(String s, char c) {
         boolean[] noPruneAndisWord = new boolean[2];
         Node r = this.trie;
