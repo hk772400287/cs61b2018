@@ -112,7 +112,7 @@ public class Boggle {
         }
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                if (i >= 0 && i < chars.length && j >= 0 && j < chars[0].length && !mark[i][j]) {
+                if (isInBoard(i, j, chars) && !mark[i][j]) {
                     dfs(s + chars[x][y], i, j, trie, pq, chars, mark);
                 }
             }
@@ -120,6 +120,12 @@ public class Boggle {
         mark[x][y] = false;
     }
 
+
+    private static boolean isInBoard(int x, int y, char[][] chars) {
+        int M = chars[0].length;
+        int N = chars.length;
+        return x >= 0 && x < N && y >= 0 && y < M;
+    }
 
     public static void main(String[] args) {
         List<String> list = Boggle.solve(7, "exampleBoard.txt");
