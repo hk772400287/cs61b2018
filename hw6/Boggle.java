@@ -25,7 +25,8 @@ public class Boggle {
             throw new IllegalArgumentException("k is non-positive");
         }
         Trie trie = new Trie();
-        MaxPQ<String> pq = new MaxPQ<>(new CMP());
+//        MaxPQ<String> pq = new MaxPQ<>(new CMP());
+        List<String> l = new ArrayList<>();
         In in = new In(boardFilePath);
         ArrayList<String> board = new ArrayList<>();
         while (in.hasNextLine()) {
@@ -47,32 +48,32 @@ public class Boggle {
         for (int j = 0; j < M; j++) {
             for (int i = 0; i < N; i++) {
                 boolean[][] mark = new boolean[N][M];
-                dfs("", i, j, trie, pq, chars, mark);
+                dfs("", i, j, trie, l, chars, mark);
             }
         }
-        List<String> l = new ArrayList<>();
-        int i = 0;
-        while (!pq.isEmpty()) {
-            String s = pq.delMax();
-            if (i > 0 && s.equals(l.get(i - 1))) {
+        l.sort(new CMP());
+        List<String> returnList = new ArrayList<>();
+        int index = 0;
+        for (int i = 0; i < l.size(); i++) {
+            if (i > 0 && l.get(i).equals(returnList.get(index - 1))) {
                 continue;
             }
-            l.add(s);
-            i++;
-            if (l.size() >= k) {
+            returnList.add(index, l.get(i));
+            index++;
+            if (returnList.size() >= k) {
                 break;
             }
         }
-        return l;
+        return returnList;
     }
 
     private static class CMP implements Comparator<String> {
         @Override
         public int compare(String o1, String o2) {
             if (o1.length() == o2.length()) {
-                return o1.compareTo(o2) * -1;
+                return o1.compareTo(o2);
             }
-            return o1.length() - o2.length();
+            return o2.length() - o1.length();
         }
     }
 
@@ -100,7 +101,7 @@ public class Boggle {
 //        }
 //    }
 
-    private static void dfs(String s, int x, int y, Trie trie, MaxPQ<String> pq, char[][] chars, boolean[][] mark) {
+    private static void dfs(String s, int x, int y, Trie trie, List<String> list, char[][] chars, boolean[][] mark) {
         mark[x][y] = true;
         boolean[] npiw = trie.noPruneisWord(s, chars[x][y]);
         if (!npiw[0]) {
@@ -108,12 +109,12 @@ public class Boggle {
             return;
         }
         if (npiw[1]) {
-            pq.insert(s + chars[x][y]);
+            list.add(s + chars[x][y]);
         }
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
                 if (isInBoard(i, j, chars) && !mark[i][j]) {
-                    dfs(s + chars[x][y], i, j, trie, pq, chars, mark);
+                    dfs(s + chars[x][y], i, j, trie, list, chars, mark);
                 }
             }
         }
