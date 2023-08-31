@@ -2,7 +2,8 @@
 
 Welcome to the 2D Tile-Based Game project! This is a Java-based game that lets you explore a dynamically generated 2D world using tile-based mechanics. Enter a seed, generate the world, and enjoy playing.
 
-![img_1.png](img_1.png)
+![image](https://github.com/hk772400287/cs61b2018/assets/105110420/f62cd238-b111-474f-8690-bfed797c8b30)
+
 
 ## Features
 
