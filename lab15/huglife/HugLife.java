@@ -98,7 +98,6 @@ public class HugLife {
             addCreature(4, 3, new Plip());
 
             addCreature(2, 2, new Clorus(1));
-            addCreature(2, 2, new Clorus(2));
         } else {
             System.out.println("World name not recognized!");
         }

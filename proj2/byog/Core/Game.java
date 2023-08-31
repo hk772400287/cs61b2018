@@ -14,39 +14,47 @@ import byog.Core.WorldGenerator.Position;
 
 
 public class Game {
-    TERenderer ter = new TERenderer();
+    private TERenderer ter;
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+
+    public Game() {
+        this.ter = new TERenderer();
+    }
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
         mainMenu();
-        String selectedmenu = selectmenu();
-        if (selectedmenu.equals("n")) {
-            long seed = getSeed();
-            WorldGenerator generator = new WorldGenerator(seed);
-            ter.initialize(WIDTH, HEIGHT);
-            generator.world = generateNewWorld(seed, generator);
-            ter.renderFrame(generator.world);
-            playGame(generator);
-            StdDraw.pause(500);
-            end();
-        } else if (selectedmenu.equals("l")) {
-            WorldGenerator generator = loadFile();
-            ter.initialize(WIDTH, HEIGHT);
-            ter.renderFrame(generator.world);
-            playGame(generator);
-            StdDraw.pause(500);
-            end();
-        } else if (selectedmenu.equals("q")) {
-            System.exit(200);
+        WorldGenerator generator;
+        switch (selectMenu()) {
+            case 'n':
+                long seed = getSeed();
+                generator = new WorldGenerator(seed);
+                ter.initialize(WIDTH, HEIGHT);
+                generator.world = generateNewWorld(seed, generator);
+                ter.renderFrame(generator.world);
+                playGame(generator);
+                StdDraw.pause(500);
+                end();
+                break;
+            case 'l':
+                generator = loadFile();
+                ter.initialize(WIDTH, HEIGHT);
+                ter.renderFrame(generator.world);
+                playGame(generator);
+                StdDraw.pause(500);
+                end();
+                break;
+            case 'q':
+            default:
+                System.exit(0);
         }
     }
 
-    public void mainMenu() {
+    private static void mainMenu() {
         StdDraw.setCanvasSize(WIDTH * 10,  HEIGHT * 20);
         StdDraw.setXscale(0, WIDTH);
         StdDraw.setYscale(0, HEIGHT);
@@ -64,15 +72,15 @@ public class Game {
         StdDraw.show();
     }
 
-    private String selectmenu() {
-        String selectedMenu = "";
-        while (selectedMenu.length() < 1) {
-            while (StdDraw.hasNextKeyTyped()) {
-                char nextKey = StdDraw.nextKeyTyped();
-                selectedMenu += Character.toString(nextKey);
-            }
+    private char selectMenu() {
+        char selectedMenu = 'a';
+        while (selectedMenu != 'n' && selectedMenu != 'l' && selectedMenu != 'q') {
+            if (StdDraw.hasNextKeyTyped()) {
+                selectedMenu = StdDraw.nextKeyTyped();
+                selectedMenu = Character.toLowerCase(selectedMenu);
+                }
         }
-        return selectedMenu.toLowerCase();
+        return selectedMenu;
     }
 
     private long getSeed() {
@@ -83,29 +91,36 @@ public class Game {
         StdDraw.setPenColor(Color.white);
         StdDraw.text(WIDTH * 0.5, HEIGHT * 0.5, "SEED: ");
         StdDraw.show();
-        while (!seed.endsWith("s")) {
-            while (StdDraw.hasNextKeyTyped()) {
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
                 char nextKey = StdDraw.nextKeyTyped();
-                seed += Character.toString(nextKey);
+                if (nextKey == 's' || nextKey == 'S') {
+                    break;
+                }
+                seed += nextKey;
                 StdDraw.clear(Color.black);
                 StdDraw.text(WIDTH * 0.5, HEIGHT * 0.5, "SEED: " + seed);
                 StdDraw.show();
+                }
             }
+        long trueSeed = 0;
+        try {
+            trueSeed = Long.parseLong(seed);
+        } catch (Exception ex) {
         }
-        seed = seed.substring(0, seed.length() - 1);
-        return Long.parseLong(seed);
+        return trueSeed;
     }
 
-    public void playGame(WorldGenerator generator) {
+    private void playGame(WorldGenerator generator) {
         String keysnotes = "";
-        while (generator.world[generator.doorPos.x][generator.doorPos.y] != Tileset.UNLOCKED_DOOR) {
+        while (generator.world[generator.getDoorPos().x][generator.getDoorPos().y] != Tileset.UNLOCKED_DOOR) {
             hud(generator.world);
-            while (StdDraw.hasNextKeyTyped()) {
+            if (StdDraw.hasNextKeyTyped()) {
                 char nextKey = StdDraw.nextKeyTyped();
                 keysnotes += Character.toString(nextKey);
                 if (keysnotes.endsWith(":Q") || keysnotes.endsWith(":q")) {
                     saveToFile(generator);
-                    System.exit(123);
+                    System.exit(0);
                 }
                 makeOneMovement(generator, nextKey);
                 ter.renderFrame(generator.world);
@@ -143,7 +158,7 @@ public class Game {
         StdDraw.show();
     }
 
-    public void end() {
+    private void end() {
         StdDraw.clear(Color.black);
         Font fontTitle = new Font("Arial", Font.BOLD, 40);
         StdDraw.setFont(fontTitle);
@@ -200,7 +215,7 @@ public class Game {
     public TETile[][] generateNewWorld(long seed, WorldGenerator generator) {
         generator.initializeTiles();
         generator.drawManyRooms();
-        generator.sortRoomList(generator.existingRooms);
+        generator.sortRoomList();
         for (int i = 0; i < generator.existingRooms.size() - 1; i++) {
             generator.connectTwoRooms(generator.existingRooms.get(i),
                     generator.existingRooms.get(i + 1));
@@ -212,7 +227,7 @@ public class Game {
 
     public TETile[][] makeMovements(WorldGenerator generator, String movement) {
         for (char c : movement.toCharArray()) {
-            if (generator.world[generator.doorPos.x][generator.doorPos.y]
+            if (generator.world[generator.getDoorPos().x][generator.getDoorPos().y]
                     .equals(Tileset.UNLOCKED_DOOR)) {
                 return generator.world;
             }
@@ -248,11 +263,9 @@ public class Game {
         return generator.world;
     }
 
-    public void saveToFile(WorldGenerator generator) {
+    private void saveToFile(WorldGenerator generator) {
         try {
-            FileOutputStream fos = new FileOutputStream("D:\\cs61b\\cs61b2018\\proj2" +
-                    "\\byog\\Core\\savedFile.txt");
-            ObjectOutputStream outputStream = new ObjectOutputStream(fos);
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("savedFile.txt"));
             outputStream.writeObject(generator);
             outputStream.flush();
             outputStream.close();
@@ -264,8 +277,7 @@ public class Game {
     public WorldGenerator loadFile() {
         WorldGenerator generator = null;
         try {
-            FileInputStream fis = new FileInputStream("D:\\cs61b\\cs61b2018\\proj2" +
-                    "\\byog\\Core\\savedFile.txt");
+            FileInputStream fis = new FileInputStream("savedFile.txt");
             ObjectInputStream inputStream = new ObjectInputStream(fis);
             generator = (WorldGenerator) inputStream.readObject();
             inputStream.close();

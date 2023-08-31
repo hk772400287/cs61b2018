@@ -44,8 +44,8 @@ public class MazeAStarPath extends MazeExplorer {
 
     /** Performs an A star search from vertex s. */
     private void astar(int s) {
-        announce();
         pq.insert(s);
+        announce();
         while (!pq.isEmpty()) {
             int v = pq.delMin();
             marked[v] = true;
@@ -55,10 +55,11 @@ public class MazeAStarPath extends MazeExplorer {
                 break;
             }
             for (int w : this.maze.adj(v)) {
-                if (!marked[w] && distTo[v] + 1 < distTo[w]) {
-                    edgeTo[w] = v;
-                    distTo[w] = distTo[v] + 1;
-                    announce();
+                if (!marked[w]) {
+                    if( distTo[v] + 1 < distTo[w]) {
+                        edgeTo[w] = v;
+                        distTo[w] = distTo[v] + 1;
+                    }
                     pq.insert(w);
                 }
             }

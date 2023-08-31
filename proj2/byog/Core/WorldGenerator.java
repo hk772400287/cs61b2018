@@ -15,19 +15,26 @@ public class WorldGenerator implements Serializable {
 
     private static final int WIDTH = 80;
     private static final int HEIGHT = 30;
-    private final long seed;
-    protected final Random random;
-    protected Position playerPos;
-    protected Position doorPos;
 
-    protected ArrayList<Position> dots = new ArrayList<>();
-    protected ArrayList<Room> existingRooms = new ArrayList<>();
+    private final Random random;
+    protected Position playerPos;
+    private Position doorPos;
+
+    private ArrayList<Position> dots;
+    protected ArrayList<Room> existingRooms;
     protected TETile[][] world;
 
+    public Position getDoorPos() {
+        return this.doorPos;
+    }
+
     public WorldGenerator(long seed) {
-        this.seed = seed;
-        random = new Random(seed);
-        world = new TETile[WIDTH][HEIGHT];
+        this.random = new Random(seed);
+        this.playerPos = null;
+        this.doorPos = null;
+        this.dots = new ArrayList<>();
+        this.existingRooms = new ArrayList<>();
+        this.world = new TETile[WIDTH][HEIGHT];
     }
     protected class Room implements Serializable {
         private Position p;
@@ -72,11 +79,9 @@ public class WorldGenerator implements Serializable {
     }
 
     public Room randomRoom() {
-        //width = 100, height = 70
-        // 1 <= x <= 99  1 <= y <= 69
         while (true) {
-            int x = random.nextInt(WIDTH - 6) + 3;
-            int y = random.nextInt(HEIGHT - 6) + 3;
+            final int x = random.nextInt(WIDTH - 6) + 3;
+            final int y = random.nextInt(HEIGHT - 6) + 3;
             Position p = new Position(x, y);
             int w = random.nextInt(5) + 2;
             int h = random.nextInt(5) + 2;
@@ -197,13 +202,13 @@ public class WorldGenerator implements Serializable {
     }
 
 
-    public void sortRoomList(ArrayList<Room> roomList) {
-        int nearestRoomTo0 = getNearesRoomtTo0(roomList);
-        switchTwoRooms(nearestRoomTo0, 0, roomList);
-        for (int i = 1; i < roomList.size(); i++) {
-            int indexOfNearest = searchNearest(roomList, i, roomList.size() - 1,
-                    roomList.get(i - 1));
-            switchTwoRooms(indexOfNearest, i, roomList);
+    public void sortRoomList() {
+        int nearestRoomTo0 = getNearesRoomtTo0(existingRooms);
+        switchTwoRooms(nearestRoomTo0, 0, existingRooms);
+        for (int i = 1; i < existingRooms.size(); i++) {
+            int indexOfNearest = searchNearest(existingRooms, i, existingRooms.size() - 1,
+                    existingRooms.get(i - 1));
+            switchTwoRooms(indexOfNearest, i, existingRooms);
         }
     }
 
@@ -216,7 +221,7 @@ public class WorldGenerator implements Serializable {
     private int getNearesRoomtTo0(ArrayList<Room> roomList) {
         Room roomAt0 = new Room(new Position(0, 0), 2, 2);
         int index = 0;
-        int dTo0Min = distanceBetweenTwoRooms(roomList.get(0), roomAt0);
+        int dTo0Min = Integer.MAX_VALUE; //distanceBetweenTwoRooms(roomList.get(0), roomAt0);
         for (Room r : roomList) {
             if (distanceBetweenTwoRooms(r, roomAt0) < dTo0Min) {
                 dTo0Min = distanceBetweenTwoRooms(r, roomAt0);

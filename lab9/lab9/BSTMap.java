@@ -112,6 +112,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             remove(key);
         }
         root = putHelper(key, value, root);
+        keyList(root, listOfKey);
     }
 
     /* Returns the number of key-value mappings in this map. */
@@ -195,6 +196,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         }
+        if (value == null) {
+            throw new IllegalArgumentException("value is null");
+        }
         this.valueOfRemovedItem = null;
         root = removeHelper(key, value, root);
         return this.valueOfRemovedItem;
@@ -224,7 +228,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
                     size -= 1;
                     p.key = min.key;
                     p.value = min.value;
-                    return p;
                 }
             }
         }
@@ -233,7 +236,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        return new BSTiterator();
+        return keySet().iterator();
+        //return new BSTiterator();
     }
 
     private class BSTiterator implements Iterator<K> {
@@ -264,8 +268,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         System.out.println(bstmap.remove("hello"));
         System.out.println(bstmap.remove("cat"));
         System.out.println(bstmap.keySet());
-
-
+//        Iterator<String> it = bstmap.iterator();
+//        while (it.hasNext()) {
+//            System.out.println(it.next());
+//        }
+        for (String key : bstmap) {
+            System.out.println(key);
+        }
     }
 }
 

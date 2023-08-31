@@ -7,11 +7,9 @@ public class Trie {
 
 
     private static class Node {
-        private char ch;
         private Boolean isWord;
         private HashMap<Character, Node> next;
-        private Node(char ch, Boolean isWord) {
-            this.ch = ch;
+        private Node(Boolean isWord) {
             this.isWord = isWord;
             this.next = new HashMap<>();
         }
@@ -19,7 +17,7 @@ public class Trie {
 
     public Trie() {
         In in = new In(Boggle.dictPath);
-        this.trie = new Node('\0', false);
+        this.trie = new Node(false);
         while (in.hasNextLine()) {
             String word = in.readLine();
             put(this.trie, word);
@@ -30,7 +28,7 @@ public class Trie {
         for (int i = 0; i < word.length(); i++) {
             char c = word.toCharArray()[i];
             if (!root.next.containsKey(c)) {
-                root.next.put(c, new Node(c, false));
+                root.next.put(c, new Node(false));
             }
             root = root.next.get(c);
         }

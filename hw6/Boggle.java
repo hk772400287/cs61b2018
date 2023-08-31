@@ -78,28 +78,28 @@ public class Boggle {
     }
 
 
-//    private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, Boolean[][] mark) {
-//        Stack<Stack<Position>> stack = new Stack<>();
-//        stack.add(new Stack<>());
-//        stack.peek().add(p);
-//        while (!stack.empty()) {
-//            Position pos = stack.peek().pop();
-//            mark[pos.x][pos.y] = true;
-//            if (trie.noPrune(s, chars[pos.x][pos.y])) {
-//                s += chars[pos.x][pos.y];
-//                if (trie.isAWord(s)) {
-//                    pq.insert(s);
-//                }
-//                for (Position neighbor : neighbors(pos, chars)) {
-//                    if (isInBoard(neighbor, chars) && !mark[neighbor.x][neighbor.y]) {
-//                        Stack<Position> innerStack = new Stack<>();
-//                        innerStack.add(neighbor);
-//                        stack.add(innerStack);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private static void dfs(String s, Position p, Trie trie, MaxPQ<String> pq, char[][] chars, Boolean[][] mark) {
+        Stack<Stack<Position>> stack = new Stack<>();
+        stack.add(new Stack<>());
+        stack.peek().add(p);
+        while (!stack.empty()) {
+            Position pos = stack.peek().pop();
+            mark[pos.x][pos.y] = true;
+            if (trie.noPrune(s, chars[pos.x][pos.y])) {
+                s += chars[pos.x][pos.y];
+                if (trie.isAWord(s)) {
+                    pq.insert(s);
+                }
+                for (Position neighbor : neighbors(pos, chars)) {
+                    if (isInBoard(neighbor, chars) && !mark[neighbor.x][neighbor.y]) {
+                        Stack<Position> innerStack = new Stack<>();
+                        innerStack.add(neighbor);
+                        stack.add(innerStack);
+                    }
+                }
+            }
+        }
+    }
 
     private static void dfs(String s, int x, int y, Trie trie, List<String> list, char[][] chars, boolean[][] mark) {
         mark[x][y] = true;

@@ -6,7 +6,7 @@ public class Hint {
         int x = 1;
         for (int i = 0; i < 10; i += 1) {
             System.out.println(i + "th power: " + x);
-            x = x * 128;
+            x = x * 256;
         }
         System.out.println(Math.abs(-2147483648));
     }

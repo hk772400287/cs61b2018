@@ -76,9 +76,7 @@ public class MergeSort {
         while (queueItems.size() != 1) {
             Queue<Queue<Item>> temp = new Queue<>();
             while (!queueItems.isEmpty()) {
-                Queue<Item> q1 = queueItems.dequeue();
-                Queue<Item> q2 = queueItems.dequeue();
-                Queue<Item> merged = mergeSortedQueues(q1, q2);
+                Queue<Item> merged = mergeSortedQueues(queueItems.dequeue(), queueItems.dequeue());
                 temp.enqueue(merged);
                 if (queueItems.size() == 1) {
                     temp.enqueue(queueItems.dequeue());
