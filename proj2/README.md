@@ -16,9 +16,9 @@ Welcome to the 2D Tile-Based Game project! This is a Java-based game that lets y
 
 To start playing the 2D Tile-Based Game, follow these steps:
 
-1. Run **Main.java**.
+1. Run "**byog.Core.Main.java**".
 2. After pressing N for "new game", enter a seed to generate the world, then press "S".
-3. Use the provided controls to navigate through the tile-based world. Once reach the golden door, you win.
+3. Use the provided controls to navigate through the tile-based world. Once reach the golden door, you will win.
 
 ## Controls
 
